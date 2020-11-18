@@ -6,8 +6,8 @@ global: {}
 replicaCount: 1
 logLevel: "debug"
 appidBinding: "appid-config"
-clientId: "<clientId_value>"
-secret: "<secret_value>"
+clientId: "3aa56dc6-d372-4bb9-9cff-e485f1420b8f"
+secret: "MWVkM2VkZWMtNzk4OS00YWNjLWFmZjMtM2QxYTFlZjdhNTc2"
 image:
   repository: replace
   tag: replace
