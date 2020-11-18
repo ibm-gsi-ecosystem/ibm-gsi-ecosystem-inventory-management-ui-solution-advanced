@@ -24,7 +24,7 @@ const express = require("express");
 const log4js = require("log4js");
 const localConfig = require("./config/local.json");
 const path = require("path");
-var cookieParser = require("cookie-parser");
+
 
 const initTracer = require('./util/init-tracing');
 
@@ -48,8 +48,7 @@ passport.use(new WebAppStrategy({
   clientId: appidConfig.client_id,
   secret: appidConfig.secret,
   oauthServerUrl: appidcfg.oauthServerUrl,
-  //redirectUri: "http://localhost:3000"
-  redirectUri: "http://localhost:3000/ibm/cloud/appid/callback"
+  redirectUri: appidConfig.application_url+CALLBACK_URL
 }));
 
 passport.serializeUser(function(user, cb) {
@@ -63,23 +62,6 @@ app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME ));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.get('/',(req,res,next)=> {
-  //console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
-  var tknresp= req.session[WebAppStrategy.AUTH_CONTEXT];
-  var blah=JSON.stringify(tknresp);
-  //console.log("Chk1 String",blah);
-  var b2=JSON.parse(blah);
-  //console.log("Access TOKEN ",b2.accessToken);
-  accessToken=b2.accessToken;
-  if (req.user){
-    console.log("Valid User",req.user);
-   //stckitem.listStockItems(accessToken);
-    next();
-  } else{
-    res.status(401).send("Unauthorized");
-  }
-});
 app.use(express.static(path.join(__dirname, "../build")));
 
 const server = http.createServer(app);
@@ -91,8 +73,7 @@ const serviceManager = require("./services/service-manager");
 require("./services/index")(app);
 require("./routers/index")(app, server);
 
-// Add your code here
-logger.info("ACCESS");
+
 const port = process.env.PORT || localConfig.port;
 server.listen(port, function() {
   logger.info(`Server listening on http://localhost:${port}`);
