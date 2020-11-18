@@ -1,0 +1,109 @@
+/**
+ * Copyright 2019 IBM Corp. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the 'License'); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+const session = require('express-session')
+const passport = require('passport');
+const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;
+const CALLBACK_URL = "/ibm/cloud/appid/callback";
+const appName = require("./../package").name;
+const appidConfig = require("./config/mappings.json");
+const http = require("http");
+const express = require("express");
+const log4js = require("log4js");
+const localConfig = require("./config/local.json");
+const path = require("path");
+var cookieParser = require("cookie-parser");
+
+const initTracer = require('./util/init-tracing');
+
+const tracer = initTracer('inventory-ui')
+const opentracing = require('opentracing')
+opentracing.initGlobalTracer(tracer)
+
+const logger = log4js.getLogger(appName);
+const app = express();
+var accessToken;
+app.use(session({
+   secret: appidConfig.secret,
+   resave: true,
+   saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+var appidcfg=JSON.parse(appidConfig.APPID_CONFIG);
+passport.use(new WebAppStrategy({
+  tenantId: appidcfg.tenantId,
+  clientId: appidConfig.client_id,
+  secret: appidConfig.secret,
+  oauthServerUrl: appidcfg.oauthServerUrl,
+  //redirectUri: "http://localhost:3000"
+  redirectUri: "http://localhost:3000/ibm/cloud/appid/callback"
+}));
+
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+  });
+ 
+ passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+  });
+app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
+app.use(passport.authenticate(WebAppStrategy.STRATEGY_NAME ));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.get('/',(req,res,next)=> {
+  //console.log(req.session[WebAppStrategy.AUTH_CONTEXT]);
+  var tknresp= req.session[WebAppStrategy.AUTH_CONTEXT];
+  var blah=JSON.stringify(tknresp);
+  //console.log("Chk1 String",blah);
+  var b2=JSON.parse(blah);
+  //console.log("Access TOKEN ",b2.accessToken);
+  accessToken=b2.accessToken;
+  if (req.user){
+    console.log("Valid User",req.user);
+   //stckitem.listStockItems(accessToken);
+    next();
+  } else{
+    res.status(401).send("Unauthorized");
+  }
+});
+app.use(express.static(path.join(__dirname, "../build")));
+
+const server = http.createServer(app);
+
+app.use(
+  log4js.connectLogger(logger, { level: process.env.LOG_LEVEL || "info" })
+);
+const serviceManager = require("./services/service-manager");
+require("./services/index")(app);
+require("./routers/index")(app, server);
+
+// Add your code here
+logger.info("ACCESS");
+const port = process.env.PORT || localConfig.port;
+server.listen(port, function() {
+  logger.info(`Server listening on http://localhost:${port}`);
+  console.log(`Server listening on http://localhost:${port}`);
+});
+
+app.use(function(req, res, next) {
+  res.sendFile(path.join(__dirname, "../public", "404.html"));
+});
+
+app.use(function(err, req, res, next) {
+  res.sendFile(path.join(__dirname, "../public", "500.html"));
+});
+module.exports = server;

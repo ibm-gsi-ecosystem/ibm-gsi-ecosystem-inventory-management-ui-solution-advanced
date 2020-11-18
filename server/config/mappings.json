@@ -1,0 +1,5 @@
+{
+    "client_id": "<clientId_value>",
+    "secret": "<secret_value>",
+    "APPID_CONFIG": "{\"tenantIdtenantId_value>\",\"oauthServerUrl\":\"<oauthServer_URL>\"}"
+}
