@@ -1,7 +1,7 @@
 {
-    "client_id": "3aa56dc6-d372-4bb9-9cff-e485f1420b8f", 
-    "secret": "MWVkM2VkZWMtNzk4OS00YWNjLWFmZjMtM2QxYTFlZjdhNTc2", 
-    "APPID_CONFIG": "{\"tenantId\":\"71cce95a-9912-4bc4-b31d-458114e66db2\",\"oauthServerUrl\":\"https://us-south.appid.cloud.ibm.com/oauth/v4/71cce95a-9912-4bc4-b31d-458114e66db2\"}",
-    "application_url":"https://inventory-management-ui-solution-dev-rr.appdev-cloud-native-ocp-2ab66b053c14936810608de9a1deac9c-0000.eu-gb.containers.appdomain.cloud"
+    "client_id": "<ClientID_value>", 
+    "secret": "<secret_value>", 
+    "APPID_CONFIG": "{\"tenantId\":\"<tenantId_value>\",\"oauthServerUrl\":\"<oauthServer_URL>\"}",
+    "application_url":"<openshift_appln_route_url>"
     
 }
