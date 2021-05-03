@@ -55,11 +55,16 @@ spec:
               path: /
               port: http
           env:
-            - name: APPID-CONFIG
+            - name: APPID_CONFIG
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.appidBinding | quote }}
                   key: binding
+            - name: APP_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: appid-ui
+                  key: route
             - name: INGRESS_HOST
               value: ""
             - name: PROTOCOLS

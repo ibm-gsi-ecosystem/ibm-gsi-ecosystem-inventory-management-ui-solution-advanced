@@ -18,13 +18,17 @@ const passport = require('passport');
 const WebAppStrategy = require("ibmcloud-appid").WebAppStrategy;
 const CALLBACK_URL = "/ibm/cloud/appid/callback";
 const appName = require("./../package").name;
-const appidConfig = require("./config/mappings.json");
+//const appidConfig = require("./config/mappings.json");
 const http = require("http");
 const express = require("express");
 const log4js = require("log4js");
 const localConfig = require("./config/local.json");
 const path = require("path");
-
+const conf = {
+	application_url: process.env.APP_URI,
+	appidConfig: JSON.parse(process.env.APPID_CONFIG),
+	port: 1880
+  }
 
 const initTracer = require('./util/init-tracing');
 
@@ -36,19 +40,19 @@ const logger = log4js.getLogger(appName);
 const app = express();
 var accessToken;
 app.use(session({
-   secret: appidConfig.secret,
+   secret: conf.appidConfig.secret,
    resave: true,
    saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-var appidcfg=JSON.parse(appidConfig.APPID_CONFIG);
+//var appidcfg=JSON.parse(appidConfig.APPID-CONFIG);
 passport.use(new WebAppStrategy({
-  tenantId: appidcfg.tenantId,
-  clientId: appidConfig.client_id,
-  secret: appidConfig.secret,
-  oauthServerUrl: appidcfg.oauthServerUrl,
-  redirectUri: appidConfig.application_url+CALLBACK_URL
+  tenantId: conf.appidConfig.tenantId,
+	clientId: conf.appidConfig.clientId,
+	secret: conf.appidConfig.secret,
+	oauthServerUrl: conf.appidConfig.oauthServerUrl,
+	redirectUri: process.env.APP_URI+CALLBACK_URL
 }));
 
 passport.serializeUser(function(user, cb) {

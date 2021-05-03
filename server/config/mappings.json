@@ -1,7 +1,5 @@
 {
-    "client_id": "<ClientID_value>", 
-    "secret": "<secret_value>", 
-    "APPID_CONFIG": "{\"tenantId\":\"<tenantId_value>\",\"oauthServerUrl\":\"<oauthServer_URL>\"}",
-    "application_url":"<openshift_appln_route_url>"
+    "APPID_CONFIG": "{\"tenantId\":\"<tenantId_value>\",\"oauthServerUrl\":\"<oauthServer_URL>\",\"clientId\": \"<ClientID_value>\", \"secret\": \"<secret_value>\"}",
+    "APP_URI":"<openshift_appln_route_url>"
     
 }
