@@ -5,9 +5,7 @@ global: {}
 
 replicaCount: 1
 logLevel: "debug"
-appidBinding: "appid-config"
-clientId: "<clientId_value>"
-secret: "<secret_value>"
+appidBinding: "binding-sandbox-team-one-appid"
 image:
   repository: replace
   tag: replace

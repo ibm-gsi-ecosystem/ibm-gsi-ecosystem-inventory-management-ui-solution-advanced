@@ -60,10 +60,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.appidBinding | quote }}
                   key: binding
-            - name: CLIENT_ID
-              value: {{ .Values.clientId | quote }}
-            - name: SECRET
-              value: {{ .Values.secret | quote }}
             - name: INGRESS_HOST
               value: ""
             - name: PROTOCOLS
