@@ -5,7 +5,7 @@ global: {}
 
 replicaCount: 1
 logLevel: "debug"
-appidBinding: "binding-sandbox-team-one-appid"
+appidBinding: "binding-workshop-team-one-appid"
 image:
   repository: replace
   tag: replace
